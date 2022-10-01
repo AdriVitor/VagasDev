@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DEVVagas.Controllers;
+
+[Route("api/v{version.apiVersion}/[controller]")]
 [ApiController]
+
 public class CandidateController : ControllerBase
 {
     private readonly AppDbContext _dbContext;
@@ -37,7 +40,7 @@ public class CandidateController : ControllerBase
     {
         try
         {
-            var vacancy = await _dbContext.CandidateModels.Where(c=>c.Id == id).Select(c=>c.Vacancies).ToListAsync();
+            var vacancy = await _dbContext.CandidateModels.Where(c => c.Id == id).Select(c => c.Vacancies).ToListAsync();
             if (vacancy == null)
             {
                 return NotFound(new { message = "Vagas não encontrada" });
@@ -88,7 +91,8 @@ public class CandidateController : ControllerBase
             await _dbContext.SaveChangesAsync();
             return Ok();
         }
-        catch{
+        catch
+        {
             return NoContent();
         }
 

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DEVVagas.Controllers;
 
+[Route("api/v{version.apiVersion}/[controller]")]
 [ApiController]
 public class CompanyController : ControllerBase
 {
@@ -67,7 +68,8 @@ public class CompanyController : ControllerBase
             await _dbContext.SaveChangesAsync();
             return Ok();
         }
-        catch{
+        catch
+        {
             return NoContent();
         }
     }

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DEVVagas.Controllers;
+
+[Route("api/v{version.apiVersion}/[controller]")]
 [ApiController]
 public class VacancyController : ControllerBase
 {
@@ -37,7 +39,7 @@ public class VacancyController : ControllerBase
     {
         try
         {
-            var vacancy = await _dbContext.VacancyModels.Where(c=>c.IdRecruiter == id).ToListAsync();
+            var vacancy = await _dbContext.VacancyModels.Where(c => c.IdRecruiter == id).ToListAsync();
             if (vacancy == null)
             {
                 return NotFound(new { message = "Vaga não encontrada" });
@@ -88,7 +90,8 @@ public class VacancyController : ControllerBase
             await _dbContext.SaveChangesAsync();
             return Ok();
         }
-        catch{
+        catch
+        {
             return NoContent();
         }
 
