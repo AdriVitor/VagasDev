@@ -21,7 +21,7 @@ public class Company {
     [MinLength(8)]
     [MaxLength(50)]
     public string Password { get; set; }
-    public TypeUser TypeUser { get; set; } = TypeUser.Company;
-    public ProfileEnterprise ProfileEnterprise { get; set; }
-    public List<Vacancy>? Vacancies { get; set; }
+    // public TypeUser TypeUser { get; set; } = TypeUser.Company;
+    // public ProfileEnterprise ProfileEnterprise { get; set; }
+    // public List<Vacancy>? Vacancies { get; set; }
 }

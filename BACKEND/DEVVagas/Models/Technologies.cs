@@ -1,15 +1,15 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DEVVagas.Models;
 
-public class Technologies {
-
+public abstract class Technologies {
     [Key()]
     public int Id { get; set; }
-    public bool JavaScript { get; set; }
-    public bool Python { get; set; }
-    public bool Java { get; set; }
-    public bool PHP { get; set; }
+    public bool JavaScript { get; set; } = false;
+    public bool Python { get; set; } = false;
+    public bool Java { get; set; } = false;
+    public bool PHP { get; set; } = false;
     public bool CSharp { get; set; }
     public bool CMaisMais { get; set; }
     public bool TypeScript { get; set; }
@@ -18,7 +18,7 @@ public class Technologies {
     public bool Swift { get; set; }
     public bool R { get; set; }
     public bool ObjectiveC { get; set; }
-    public bool Scala { get; set; }
+    // public bool Scala { get; set; }
     public bool Shell { get; set; }
     public bool Go { get; set; }
     public bool PowerShell { get; set; }

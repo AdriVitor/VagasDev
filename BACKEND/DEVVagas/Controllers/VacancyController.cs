@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DEVVagas.Controllers;
 
-[Route("api/v{version.apiVersion}/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class VacancyController : ControllerBase
 {
@@ -21,16 +21,34 @@ public class VacancyController : ControllerBase
     {
         try
         {
-            var vacancy = await _dbContext.VacancyModels.FirstOrDefaultAsync(c => c.Id == id);
-            if (vacancy == null)
-            {
-                return NotFound(new { message = "Vaga não encontrada" });
+            var query = await (from v in _dbContext.Vacancy
+                        join t in _dbContext.TechnologiesVacancies 
+                        on v.Id equals t.VacancyId
+                        where v.Id == id
+                        select new{
+                            Name = v.Name,
+                            Junior = v.Junior,
+                            Pleno = v.Pleno,
+                            Senior = v.Senior,
+                            Description = v.Description,
+                            City = v.City,
+                            Remote = v.Remote,
+                            Hibrid = v.Hibrid,
+                            Presential = v.Presential,
+                            CLT = v.CLT,
+                            PJ = v.PJ,
+                            Internship = v.Internship,
+                            Technologies = _dbContext.TechnologiesVacancies.Where(x=>x.VacancyId == v.Id).ToList()
+                        }).FirstOrDefaultAsync();
+
+            if(query == null){
+                return NotFound(new{Message = "Vaga não encontrada"});
             }
-            return Ok(vacancy);
+            return Ok(query);
         }
-        catch
+        catch(Exception ex)
         {
-            return NoContent();
+            return NotFound(new {message = ex.Message});
         }
     }
 
@@ -39,16 +57,40 @@ public class VacancyController : ControllerBase
     {
         try
         {
-            var vacancy = await _dbContext.VacancyModels.Where(c => c.IdRecruiter == id).ToListAsync();
-            if (vacancy == null)
-            {
-                return NotFound(new { message = "Vaga não encontrada" });
+            // var vacancy = await _dbContext.Vacancy.Where(c => c.RecruiterId == id).ToListAsync();
+            // if (vacancy == null)
+            // {
+            //     return NotFound(new { message = "Vaga não encontrada" });
+            // }
+            // return Ok(vacancy);
+
+            var query = await (from v in _dbContext.Vacancy
+                        join r in _dbContext.Recruiter 
+                        on v.RecruiterId equals r.Id
+                        select new{
+                            Name = v.Name,
+                            Junior = v.Junior,
+                            Pleno = v.Pleno,
+                            Senior = v.Senior,
+                            Description = v.Description,
+                            City = v.City,
+                            Remote = v.Remote,
+                            Hibrid = v.Hibrid,
+                            Presential = v.Presential,
+                            CLT = v.CLT,
+                            PJ = v.PJ,
+                            Internship = v.Internship,
+                            Technologies = _dbContext.TechnologiesVacancies.Where(x=>x.VacancyId == v.Id).ToList()
+                        }).ToListAsync();
+
+            if(query == null){
+                return NotFound(new{Message = "Vaga não encontrada"});
             }
-            return Ok(vacancy);
+            return Ok(query);
         }
-        catch
+        catch(Exception ex)
         {
-            return NoContent();
+            return NotFound(new {message = ex.Message});
         }
     }
 
@@ -61,9 +103,9 @@ public class VacancyController : ControllerBase
             await _dbContext.SaveChangesAsync();
             return Ok();
         }
-        catch
+        catch(Exception ex)
         {
-            return NoContent();
+            return NotFound(new {message = ex.Message});
         }
     }
 
@@ -72,27 +114,31 @@ public class VacancyController : ControllerBase
     {
         try
         {
-            var model = await _dbContext.VacancyModels.FirstOrDefaultAsync(c => c.Id == id);
+            var model = await _dbContext.Vacancy.FirstOrDefaultAsync(c => c.Id == id);
             if (model == null)
             {
                 return NotFound(new { message = "Vaga não encontrada" });
             }
-
-            model.City = vacancy.City;
+            
+            model.Name = vacancy.Name;
+            model.Junior = vacancy.Junior;
+            model.Pleno = vacancy.Pleno;
+            model.Senior = vacancy.Senior;
             model.Description = vacancy.Description;
-            model.Seniority = vacancy.Seniority;
-            model.Technologies = vacancy.Technologies;
+            model.City = vacancy.City;
             model.Remote = vacancy.Remote;
             model.Presential = vacancy.Presential;
-            model.TypeContracts = vacancy.TypeContracts;
+            model.CLT = vacancy.CLT;
+            model.PJ = vacancy.PJ;
+            model.Internship = vacancy.Internship;            
 
             _dbContext.Update(model);
             await _dbContext.SaveChangesAsync();
             return Ok();
         }
-        catch
+        catch(Exception ex)
         {
-            return NoContent();
+            return NotFound(new {message = ex.Message});
         }
 
     }

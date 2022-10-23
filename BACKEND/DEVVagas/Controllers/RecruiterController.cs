@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DEVVagas.Controllers;
 
-[Route("api/v{version.apiVersion}/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class RecruiterController : ControllerBase
 {
@@ -21,10 +21,10 @@ public class RecruiterController : ControllerBase
     {
         try
         {
-            var recruiter = await _dbContext.RecruiterModels.FirstOrDefaultAsync(c => c.Id == id);
+            var recruiter = await _dbContext.Recruiter.FirstOrDefaultAsync(c => c.Id == id);
             if (recruiter == null)
             {
-                return NotFound(new { message = "Candidato não encontrado" });
+                return NotFound(new { message = "Recrutador não encontrado" });
             }
             return Ok(recruiter);
         }
@@ -35,13 +35,13 @@ public class RecruiterController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> PostRecruiter([FromBody] Recruiter recruiter)
+    public async Task<ActionResult<Recruiter>> PostRecruiter([FromBody] Recruiter recruiter)
     {
         try
         {
             await _dbContext.AddAsync(recruiter);
             await _dbContext.SaveChangesAsync();
-            return Ok();
+            return Ok(recruiter);
         }
         catch
         {
@@ -54,15 +54,17 @@ public class RecruiterController : ControllerBase
     {
         try
         {
-            var model = await _dbContext.RecruiterModels.FirstOrDefaultAsync(c => c.Id == id);
+            var model = await _dbContext.Recruiter.FirstOrDefaultAsync(c => c.Id == id);
             if (model == null)
             {
-                return NotFound(new { message = "Candidato não encontrado" });
+                return NotFound(new { message = "Recrutador não encontrado" });
             }
 
-            model.Contact = recruiter.Contact;
-            model.Company = recruiter.Company;
-            model.Vacancies = recruiter.Vacancies;
+            model.BirthDate = recruiter.BirthDate;
+            model.CPF = recruiter.CPF;
+            model.Description = recruiter.Description;
+            model.PhoneNumber = recruiter.PhoneNumber;
+            model.LinkedIn = recruiter.LinkedIn;
 
             _dbContext.Update(model);
             await _dbContext.SaveChangesAsync();
