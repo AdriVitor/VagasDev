@@ -39,10 +39,6 @@ public class CandidateController : ControllerBase
                                    Technologies = _dbContext.TechnologiesCandidates.Where(x => x.CandidateId == v.Id).ToList()
                                }).FirstOrDefaultAsync();
 
-            if (query == null)
-            {
-                return NotFound(new { Message = "Candidato não encontrado" });
-            }
             return Ok(query);
         }
         catch
