@@ -16,6 +16,40 @@ public class VacancyController : ControllerBase
         _dbContext = dbContext;
     }
 
+    [HttpGet]
+    public async Task<ActionResult<Vacancy>> GetVacancyToList()
+    {
+        try
+        {
+
+            var query = await (from v in _dbContext.Vacancy
+                        select new{
+                            Name = v.Name,
+                            Junior = v.Junior,
+                            Pleno = v.Pleno,
+                            Senior = v.Senior,
+                            Description = v.Description,
+                            City = v.City,
+                            Remote = v.Remote,
+                            Hibrid = v.Hibrid,
+                            Presential = v.Presential,
+                            CLT = v.CLT,
+                            PJ = v.PJ,
+                            Internship = v.Internship,
+                            Technologies = _dbContext.TechnologiesVacancies.Where(x=>x.VacancyId == v.Id).ToList()
+                        }).ToListAsync();
+
+            if(query == null){
+                return NotFound(new{Message = "Vaga não encontrada"});
+            }
+            return Ok(query);
+        }
+        catch(Exception ex)
+        {
+            return NotFound(new {message = ex.Message});
+        }
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<Vacancy>> GetVacancyById([FromRoute] int id)
     {
@@ -57,12 +91,6 @@ public class VacancyController : ControllerBase
     {
         try
         {
-            // var vacancy = await _dbContext.Vacancy.Where(c => c.RecruiterId == id).ToListAsync();
-            // if (vacancy == null)
-            // {
-            //     return NotFound(new { message = "Vaga não encontrada" });
-            // }
-            // return Ok(vacancy);
 
             var query = await (from v in _dbContext.Vacancy
                         join r in _dbContext.Recruiter 
