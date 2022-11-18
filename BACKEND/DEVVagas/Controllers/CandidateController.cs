@@ -7,7 +7,6 @@ namespace DEVVagas.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-
 public class CandidateController : ControllerBase
 {
     private readonly AppDbContext _dbContext;
@@ -35,7 +34,8 @@ public class CandidateController : ControllerBase
                                    CPF = v.CPF,
                                    Description = v.Description,
                                    LinkedIn = v.LinkedIn,
-                                   GitHubOrGitlabOrPortfolio = v.GitHubOrGitlabOrPortfolio,
+                                   GitHub = v.GitHub,
+                                   Portfolio = v.Portfolio,
                                    Technologies = _dbContext.TechnologiesCandidates.Where(x => x.CandidateId == v.Id).ToList()
                                }).FirstOrDefaultAsync();
 
@@ -97,36 +97,105 @@ public class CandidateController : ControllerBase
         }
     }*/
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult<Candidate>> PutCandidate(
+    [HttpPut("aboutyou/{id}")]
+    public async Task<ActionResult<Candidate>> PutAboutYouCandidate(
         [FromRoute] int id, [FromBody] Candidate candidate)
     {
-        /*try
-        {*/
-        var model = await _dbContext.Candidate.FirstOrDefaultAsync(c => c.Id == id);
-        if (model == null)
+        try
         {
-            return NotFound(new { message = "Candidato não encontrado" });
+            var model = await _dbContext.Candidate.FirstOrDefaultAsync(c => c.Id == id);
+            if (model == null)
+            {
+                return NotFound(new { message = "Candidato não encontrado" });
+            }
+
+            model.Title = candidate.Title;
+            model.LastName = candidate.LastName;
+            model.PhoneNumber = candidate.PhoneNumber;
+            model.City = candidate.City;
+
+            _dbContext.Candidate.Update(model);
+            await _dbContext.SaveChangesAsync();
+            return Ok(model);
         }
-
-        // model.Contact = candidate.Contact;
-        model.Email = candidate.Email;
-        model.CPF = candidate.CPF;
-        model.LinkedIn = candidate.LinkedIn;
-        model.Description = candidate.Description;
-        // model.Seniority = candidate.Seniority;
-        model.GitHubOrGitlabOrPortfolio = candidate.GitHubOrGitlabOrPortfolio;
-        // model.Technologies = candidate.Technologies;
-        model.City = candidate.City;
-
-        _dbContext.Candidate.Update(model);
-        await _dbContext.SaveChangesAsync();
-        return Ok(model);
-        /*}
         catch
         {
             return NoContent();
-        }*/
+        }
+    }
 
+    [HttpPut("presentation/{id}")]
+    public async Task<ActionResult<Candidate>> PutPresentationCandidate(
+        [FromRoute] int id, [FromBody] Candidate candidate)
+    {
+        try
+        {
+            var model = await _dbContext.Candidate.FirstOrDefaultAsync(c => c.Id == id);
+            if (model == null)
+            {
+                return NotFound(new { message = "Candidato não encontrado" });
+            }
+
+            model.Title = candidate.Title;
+            model.Description = candidate.Description;
+            model.LinkedIn = candidate.LinkedIn;
+            model.GitHub = candidate.GitHub;
+            model.Portfolio = candidate.Portfolio;
+
+            _dbContext.Candidate.Update(model);
+            await _dbContext.SaveChangesAsync();
+            return Ok(model);
+        }
+        catch
+        {
+            return NoContent();
+        }
+    }
+
+    [HttpPut("seniority/{id}")]
+    public async Task<ActionResult<Candidate>> PutSeniorityCandidate(
+        [FromRoute] int id, [FromBody] Candidate candidate)
+    {
+        try
+        {
+            var model = await _dbContext.Candidate.FirstOrDefaultAsync(c => c.Id == id);
+            if (model == null)
+            {
+                return NotFound(new { message = "Candidato não encontrado" });
+            }
+
+            model.Seniority = candidate.Seniority;
+
+            _dbContext.Candidate.Update(model);
+            await _dbContext.SaveChangesAsync();
+            return Ok(model);
+        }
+        catch
+        {
+            return NoContent();
+        }
+    }
+
+    [HttpPost("authenticate")]
+    public async Task<ActionResult<dynamic>> Authenticate([FromBody] Candidate model){
+        try{
+            
+            var user = CandidateRepository.Get(model);    
+            var validacao = _dbContext.Candidate.FirstOrDefault(x=>x.Email == model.Email && x.Password == model.Password);
+
+            if((user.Email == null || user.Password == null) || (user.Email.ToLower() != validacao.Email.ToLower() || user.Password != validacao.Password)){
+                return NotFound(new{message="Usuário ou senha inválidos"});
+            }
+            
+            var token = TokenServiceCandidate.GenerateToken(user);
+            user.Id = validacao.Id;
+            return new{
+                user = user,
+                token = token
+            };
+        }
+        catch{
+            return NotFound();
+        }
     }
 }

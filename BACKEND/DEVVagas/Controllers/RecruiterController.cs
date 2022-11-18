@@ -75,4 +75,27 @@ public class RecruiterController : ControllerBase
             return NoContent();
         }
     }
+
+    [HttpPost("authenticate")]
+    public async Task<ActionResult<dynamic>> Authenticate([FromBody] Recruiter model){
+        try{
+            
+            var user = RecruiterRepository.Get(model);    
+            var validacao = _dbContext.Recruiter.FirstOrDefault(x=>x.Email == model.Email && x.Password == model.Password);
+
+            if((user.Email == null || user.Password == null) || (user.Email.ToLower() != validacao.Email.ToLower() || user.Password != validacao.Password)){
+                return NotFound(new{message="Usuário ou senha inválidos"});
+            }
+            
+            var token = TokenServiceRecruiter.GenerateToken(user);
+            user.Id = validacao.Id;
+            return new{
+                user = user,
+                token = token
+            };
+        }
+        catch{
+            return NotFound();
+        }
+    }
 }
