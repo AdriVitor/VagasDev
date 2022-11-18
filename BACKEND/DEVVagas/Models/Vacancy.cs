@@ -32,4 +32,16 @@ public class Vacancy {
     public bool CLT { get; set; }
     public bool PJ { get; set; }
     public bool Internship { get; set; }
+    [StringLength(1000)]
+    [MaxLength(1000)]
+    public string? DescriptionCompany { get; set; }
+    [StringLength(1000)]
+    [MaxLength(1000)]
+    public string? ActivitiesAndResponsibilities { get; set; }
+    [StringLength(1000)]
+    [MaxLength(1000)]
+    public string? Requirements { get; set; }
+    [StringLength(1000)]
+    [MaxLength(1000)]
+    public string? Benefits { get; set; }
 }
